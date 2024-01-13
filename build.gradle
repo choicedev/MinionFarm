@@ -1,0 +1,101 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+}
+
+group = 'com.choice'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url = "https://jitpack.io" }
+    maven {
+        name = "sonatype-oss-snapshots1"
+        url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven { url = "https://repo.aikar.co/content/groups/aikar/" }
+    maven { url = "https://hub.spigotmc.org/nexus/content/groups/public/" }
+    maven {
+        name = "spigotmc-repo"
+        url = "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "CodeMC"
+        url = uri("https://repo.codemc.io/repository/maven-public/")
+    }
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+dependencies {
+    //compileOnly "org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT"
+
+    implementation "net.kyori:adventure-platform-bukkit:4.3.0"
+    implementation "net.kyori:adventure-api:4.14.0"
+    implementation "net.kyori:adventure-text-minimessage:4.14.0"
+    implementation "org.spongepowered:configurate-extra-kotlin:4.1.2"
+    implementation "org.spongepowered:configurate-yaml:4.1.2"
+    implementation "com.github.cryptomorin:XSeries:9.5.0"
+    implementation "co.aikar:acf-bukkit:0.5.1-SNAPSHOT"
+    implementation "de.tr7zw:item-nbt-api:2.12.2"
+    implementation "io.github.rysefoxx.inventory:RyseInventory-Plugin:1.5.7"
+    implementation ("com.github.kangarko:Foundation:6.6.1") {
+        transitive = false
+    }
+    compileOnly "com.github.decentsoftware-eu:decentholograms:2.8.6"
+    implementation "org.projectlombok:lombok:1.18.22"
+    annotationProcessor "org.projectlombok:lombok:1.18.22"
+
+}
+
+
+def targetJavaVersion = 16
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+    archiveFileName.set("${project.name}-${project.version}.jar")
+    destinationDirectory.set(file("C:\\Choice\\MC SERVER\\plugins"))
+    relocate 'com.cryptomorin.xseries', 'com.choice.xseries'
+    relocate 'net.kyori', 'com.choice.framework.api.minimessage'
+    relocate 'org.reflections', 'com.choice.api'
+    relocate 'org.spongepowered', 'com.choice.api.spongee'
+    relocate 'org.yaml.snakeyaml', 'com.choice.api.config'
+    relocate 'org.springframework', 'com.choice.api.org'
+    relocate 'co.aikar.locales', 'com.choice.api.acf'
+    relocate 'acf', 'com.choice.api.acf'
+    relocate 'io.leangen.geantyref', 'com.choice.api'
+    relocate 'DebugProbesKt', 'com.choice.api'
+    relocate 'de.tr7zw.changeme.nbtapi', 'com.choice.api'
+    relocate 'org.mineacademy', 'com.choice.api'
+    relocate 'oio.github.rysefoxx', 'com.choice.api'
+}

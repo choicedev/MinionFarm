@@ -1,0 +1,5 @@
+name: Minions-Farm
+version: '${version}'
+main: com.choice.minionfarm.Main
+api-version: 1.13
+depend: [NBTAPI, ProtocolLib]
