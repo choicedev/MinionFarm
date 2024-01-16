@@ -1,6 +1,7 @@
 package com.choice.minionfarm.nbt;
 
 import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTContainer;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,6 +20,11 @@ public class NBTDataHandler {
 
     @Getter
     private final NBTItem nbtItem;
+
+    public NBTDataHandler(ItemStack item) {
+        this.nbtItem = new NBTItem(item);
+        this.nbtCompound = null;
+    }
 
     public NBTDataHandler(ItemStack item, String compound) {
         NBTItem nbtItem = new NBTItem(item);
@@ -74,6 +80,14 @@ public class NBTDataHandler {
         nbtCompound.setBoolean(keyName, value);
     }
 
+    public boolean hasCompound(String compound){
+        return nbtItem.getCompound(compound) != null;
+    }
+
+    public void setNBTContainer(String container){
+        nbtItem.mergeCompound(new NBTContainer(container));
+    }
+
     public void setLocation(@NonNull Location location, @Nullable String compound){
         NBTCompound nbt = nbtCompound.addCompound(Objects.requireNonNullElse(compound, NBT_LOCATION));
         nbt.setString(NBT_LOCATION_WORLD_UUID, location.getWorld().getUID().toString());
@@ -81,7 +95,6 @@ public class NBTDataHandler {
         nbt.setDouble(NBT_LOCATION_Y, location.getY());
         nbt.setDouble(NBT_LOCATION_Z, location.getZ());
     }
-
 
     public Location getLocation(){
         NBTCompound nbt = nbtCompound.getCompound(NBT_LOCATION);

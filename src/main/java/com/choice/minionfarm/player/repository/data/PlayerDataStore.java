@@ -28,11 +28,16 @@ public class PlayerDataStore {
 
     public PlayerDataStore(UUID uuid){
         this.uuid = uuid;
+        this.maxMinions = 2;
         players.put(uuid, this);
     }
 
 
     public void addMinion(MinionData data){
         minions.put(data.getUuid(), data);
+    }
+
+    public static PlayerDataStore getPlayer(UUID uuid){
+        return players.get(uuid);
     }
 }

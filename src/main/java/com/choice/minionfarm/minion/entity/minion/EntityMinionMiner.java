@@ -2,12 +2,13 @@ package com.choice.minionfarm.minion.entity.minion;
 
 import com.choice.minionfarm.minion.entity.EntityMinion;
 import com.choice.minionfarm.minion.repository.data.MinionData;
-import com.choice.minionfarm.minion.repository.data.local.MinionsYML;
+import com.choice.minionfarm.minion.repository.local.MinionsRepository;
 import com.choice.minionfarm.utils.BlockUtils;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
+import org.mineacademy.fo.Common;
 import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.remain.CompMaterial;
 
@@ -19,8 +20,8 @@ public class EntityMinionMiner extends EntityMinion {
     @Getter
     private ItemCreator blockPlace;
 
-    public EntityMinionMiner(MinionsYML minionsYML) {
-        super(minionsYML);
+    public EntityMinionMiner(MinionsRepository minionsRepository) {
+        super(minionsRepository);
         this.blockPlace = ItemCreator.of(getPlace());
     }
 

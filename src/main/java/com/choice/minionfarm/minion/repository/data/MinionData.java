@@ -3,7 +3,8 @@ package com.choice.minionfarm.minion.repository.data;
 import com.choice.minionfarm.api.FarmAPI;
 import com.choice.minionfarm.minion.di.enums.MinionType;
 import com.choice.minionfarm.minion.entity.EntityMinion;
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import com.choice.minionfarm.player.entity.EntityPlayer;
+import com.choice.minionfarm.utils.constants.Constants;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
@@ -11,14 +12,10 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.mineacademy.fo.Common;
 import org.mineacademy.fo.menu.model.ItemCreator;
-import org.mineacademy.fo.menu.model.SkullCreator;
 import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -61,14 +58,17 @@ public class MinionData {
     @Setter
     private boolean enabled;
 
-    private Player player;
-    private EntityMinion minion;
+    private EntityPlayer player;
 
-    public MinionData(Player player, String key, Location spawn){
+    @Getter
+    private EntityMinion minion;
+    private boolean loaded = false;
+
+    public MinionData(EntityPlayer player, String key, Location spawn){
         this.player = player;
-        this.spawn = spawn;
-        this.uuid = UUID.randomUUID();
+        this.spawn = spawn.add(0.5, 1, 0.5);
         this.key = key;
+        this.uuid = UUID.randomUUID();
         init();
     }
 
@@ -76,7 +76,7 @@ public class MinionData {
     public void init(){
         this.headSkin = "";
         this.minion = FarmAPI.getMinionManager().getMinion(this.key);
-        this.minionType = minion.getMinionsYML().getMinionType();
+        this.minionType = minion.getMinionsRepository().getMinionType();
         this.enabled = minion.checkBlock(spawn);
     }
 
@@ -88,13 +88,16 @@ public class MinionData {
             spawnBlock.setType(ItemCreator.of(CompMaterial.AIR).make());
         }
 
-
-        ArrayList<Entity> entitys = spawn.getWorld().getNearbyEntities(spawn, 0.5, 0.5, 0.5).stream()
+        ArrayList<Entity> entities = spawn.getWorld().getNearbyEntities(spawn, 0.5, 0.5, 0.5).stream()
                 .filter(e -> e.getType().equals(EntityType.ARMOR_STAND)).collect(Collectors.toCollection(ArrayList::new));
-        entitys.forEach(Entity::remove);
+        entities.forEach(Entity::remove);
 
         armorStand = spawn.getWorld().spawn(spawn, ArmorStand.class);
+        this.uuid = armorStand.getUniqueId();
         configureArmorStand(armorStand);
+        FarmAPI.getMinionManager().addActiveMinion(armorStand.getUniqueId(), this);
+        this.enabled = this.minion.checkBlock(spawn);
+        this.loaded = true;
     }
 
     private void configureArmorStand(ArmorStand entity) {
@@ -106,10 +109,14 @@ public class MinionData {
     }
 
     private void addEquipment(ArmorStand entity) {
-
         entity.setItemInHand(minion.getItemHand());
         entity.setHelmet(minion.getHead());
 
+        if(this.minion.getArmor().isEmpty()) return;
+
+        entity.setChestplate(this.minion.getArmor().get(Constants.ENTITY_CHESTPLATE));
+        entity.setLeggings(this.minion.getArmor().get(Constants.ENTITY_LEGGINGS));
+        entity.setBoots(this.minion.getArmor().get(Constants.ENTITY_BOOTS));
     }
 
 }
