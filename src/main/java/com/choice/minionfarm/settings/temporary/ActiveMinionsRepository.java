@@ -33,4 +33,7 @@ public class ActiveMinionsRepository extends YamlConfig {
     public boolean containsMinion(UUID uuid){
         return this.minionsActive.contains(uuid.toString());
     }
+    public boolean removeMinion(UUID uuid){
+        return this.minionsActive.remove(uuid.toString());
+    }
 }

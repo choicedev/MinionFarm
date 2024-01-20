@@ -19,6 +19,7 @@ import org.mineacademy.fo.remain.CompMaterial;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.choice.minionfarm.utils.constants.Constants.*;
 
@@ -66,6 +67,7 @@ public abstract class EntityMinion {
         skull.setItemMeta(itemMeta);
         NBTDataHandler nbtItem = new NBTDataHandler(skull, Constants.MINION_HEAD_COMPOUND);
         nbtItem.setString(MinionConfigConstants.KEY, minionsRepository.getKey());
+        nbtItem.setString(MinionConfigConstants.MINION_ID, UUID.randomUUID().toString());
         nbtItem.setString(MinionConfigConstants.MINION_TYPE, minionsRepository.getMinionType().name());
         nbtItem.setString(MinionConfigConstants.TITLE, minionsRepository.getTitle());
         NBTCompound nbtSkull = nbtItem.getNbtItem().addCompound("SkullOwner");

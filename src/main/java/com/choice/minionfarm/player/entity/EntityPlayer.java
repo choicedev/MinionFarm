@@ -89,6 +89,10 @@ public class EntityPlayer {
         );
     }
 
+    public boolean isOp(){
+        return this.player.isOp();
+    }
+
     MiniMessage miniMessage = MiniMessage.miniMessage();
     private Component colorize(String text) {
         Component legacyComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(text);

@@ -4,6 +4,7 @@ import com.choice.minionfarm.api.FarmAPI;
 import com.choice.minionfarm.minion.di.enums.MinionType;
 import com.choice.minionfarm.minion.entity.EntityMinion;
 import com.choice.minionfarm.player.entity.EntityPlayer;
+import com.choice.minionfarm.settings.temporary.ActiveMinionsRepository;
 import com.choice.minionfarm.utils.constants.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import org.mineacademy.fo.menu.model.ItemCreator;
 import org.mineacademy.fo.remain.CompMaterial;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -58,17 +60,16 @@ public class MinionData {
     @Setter
     private boolean enabled;
 
-    private EntityPlayer player;
+    @Getter
+    private final UUID ownerUUID;
 
     @Getter
     private EntityMinion minion;
-    private boolean loaded = false;
 
-    public MinionData(EntityPlayer player, String key, Location spawn){
-        this.player = player;
+    public MinionData(UUID ownerUUID, String key, Location spawn){
+        this.ownerUUID = ownerUUID;
         this.spawn = spawn.add(0.5, 1, 0.5);
         this.key = key;
-        this.uuid = UUID.randomUUID();
         init();
     }
 
@@ -97,7 +98,6 @@ public class MinionData {
         configureArmorStand(armorStand);
         FarmAPI.getMinionManager().addActiveMinion(armorStand.getUniqueId(), this);
         this.enabled = this.minion.checkBlock(spawn);
-        this.loaded = true;
     }
 
     private void configureArmorStand(ArmorStand entity) {
@@ -119,4 +119,14 @@ public class MinionData {
         entity.setBoots(this.minion.getArmor().get(Constants.ENTITY_BOOTS));
     }
 
+    public void removeFromWorld() {
+        if(armorStand == null) return;
+        deleteMinion();
+        armorStand.remove();
+     
+    }
+
+    private void deleteMinion(){
+        FarmAPI.getMinionManager().removeMinionActive(armorStand.getUniqueId());
+    }
 }

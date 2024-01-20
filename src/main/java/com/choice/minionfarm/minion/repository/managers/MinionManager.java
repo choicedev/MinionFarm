@@ -1,6 +1,5 @@
 package com.choice.minionfarm.minion.repository.managers;
 
-import com.choice.minionfarm.api.FarmAPI;
 import com.choice.minionfarm.api.FileAPI;
 import com.choice.minionfarm.minion.di.enums.MinionType;
 import com.choice.minionfarm.minion.entity.EntityMinion;
@@ -55,6 +54,16 @@ public class MinionManager {
     public void addActiveMinion(UUID uuid, MinionData minionData){
         activeMinion.put(uuid, minionData);
         repository.addMinionsActive(uuid);
+        repository.save();
+    }
+
+    public MinionData getMinionActive(UUID uuid){
+        return activeMinion.getOrDefault(uuid, null);
+    }
+
+    public void removeMinionActive(UUID uuid){
+        activeMinion.remove(uuid);
+        repository.removeMinion(uuid);
         repository.save();
     }
 
