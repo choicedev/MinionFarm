@@ -1,14 +1,18 @@
 package com.choice.minionfarm.minion.entity;
 
+import com.choice.minionfarm.minion.di.enums.TypeFarm;
 import com.choice.minionfarm.minion.repository.data.MinionData;
 import com.choice.minionfarm.minion.repository.local.MinionsRepository;
 import com.choice.minionfarm.nbt.NBTDataHandler;
+import com.choice.minionfarm.utils.function.BiFunction;
 import com.choice.minionfarm.utils.constants.Constants;
 import com.choice.minionfarm.utils.constants.MinionConfigConstants;
+import com.choice.minionfarm.utils.function.Function;
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTListCompound;
 import lombok.Getter;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -50,10 +54,13 @@ public abstract class EntityMinion {
         return minionsRepository.getLore();
     }
 
-    public abstract void update(MinionData minion, ArmorStand armorStand, Location location);
+    public abstract void action(MinionData minion, ArmorStand armorStand, Location location, Function<Boolean> action);
 
     public abstract boolean checkBlock(Location location);
-    public abstract boolean checkBlockAround(Location location);
+    public abstract Location checkBlockAround(Location location);
+    public abstract Block getRandomBlock(Location location);
+    public abstract void preExecuteAction(Location spawn, BiFunction<TypeFarm, Location> preExecution);
+    public abstract void stop();
 
     public String getTitle(){
         return minionsRepository.getTitle();
@@ -91,4 +98,9 @@ public abstract class EntityMinion {
         map.put(ENTITY_BOOTS, nbtBoots.getItem());
         return map;
     }
+
+    public int getDelay() {
+        return minionsRepository.getDelayFarm();
+    }
+
 }

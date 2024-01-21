@@ -13,5 +13,7 @@ public class MinionConfigConstants {
     public static final String GIVE_ITEM = "give_item";
     public static final String HAND_ITEM = "hand_item";
     public static final String ARMOR_URL = "armor_url";
+    public static final String DAMAGE = "damage";
+    public static final String DELAY = "delay";
 
 }

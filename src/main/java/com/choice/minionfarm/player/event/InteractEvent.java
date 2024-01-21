@@ -48,13 +48,13 @@ public class InteractEvent implements Listener {
 
 
         MinionData minion = new MinionData(
-                player.getUniqueId(),
+                player,
                 keyMinion,
                 placeLocation
         );
 
-        playerData.addMinion(minion);
         minion.spawn();
+        playerData.addMinion(minion);
         player.removeItemInventory(event.getItem());
         player.sendMessage("<green>Você spawnou um "+minion.getMinion().getTitle());
         player.sendMessage("<yellow>("+playerData.getMinions().size()+"/"+playerData.getMaxMinions()+")");
@@ -69,24 +69,21 @@ public class InteractEvent implements Listener {
         MinionData minionData = FarmAPI.getMinionManager().getMinionActive(armorStand.getUniqueId());
 
         if(minionData == null) return;
-        Common.broadcast(""+!(minionData.getOwnerUUID().equals(player.getUniqueId()) || player.isOp()));
-        try {
-            if(!(minionData.getOwnerUUID().equals(player.getUniqueId()) || player.isOp())) return;
-            event.setCancelled(true);
-            Common.broadcast("" + PlayerDataStore.getPlayer(minionData.getOwnerUUID()).getMinions().size());
-            PlayerDataStore playerDataStore = PlayerDataStore.getPlayer(minionData.getOwnerUUID());
-            Common.broadcast("" + playerDataStore.getMinions());
-            EntityMinion minion = FarmAPI.getMinionManager().getMinion(minionData.getKey());
-            Common.broadcast("" + minionData.getKey());
+        Common.broadcast(""+!(minionData.getPlayer().getUniqueId().equals(player.getUniqueId()) || player.isOp()));
+        if(!(minionData.getPlayer().getUniqueId().equals(player.getUniqueId()) || player.isOp())) return;
+        event.setCancelled(true);
+        Common.broadcast("" + PlayerDataStore.getPlayer(minionData.getPlayer().getUniqueId()).getMinions().size());
+        PlayerDataStore playerDataStore = PlayerDataStore.getPlayer(minionData.getPlayer().getUniqueId());
+        Common.broadcast("" + playerDataStore.getMinions());
+        EntityMinion minion = FarmAPI.getMinionManager().getMinion(minionData.getKey());
+        Common.broadcast("" + minionData.getKey());
 
-            minionData.removeFromWorld();
-            playerDataStore.removeMinion(player.getUniqueId());
+        minionData.removeFromWorld();
+        playerDataStore.removeMinion(minionData.getUuid());
 
-            player.addItems(minion.getHead());
-            player.sendMessage("<yellow>(" + playerDataStore.getMinions().size() + "/" + playerDataStore.getMaxMinions() + ")");
-        }catch (Exception e){
-            Common.broadcast("" + e);
-        }
+        player.addItems(minion.getHead());
+        player.sendMessage("<yellow>(" + playerDataStore.getMinions().size() + "/" + playerDataStore.getMaxMinions() + ")");
+
 
     }
 

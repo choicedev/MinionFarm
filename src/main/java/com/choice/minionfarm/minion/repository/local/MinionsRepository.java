@@ -5,6 +5,7 @@ import com.choice.minionfarm.minion.di.enums.MinionType;
 import com.choice.minionfarm.utils.constants.MinionConfigConstants;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.md_5.bungee.api.ChatColor;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.remain.CompMaterial;
 import org.mineacademy.fo.settings.YamlConfig;
@@ -33,18 +34,23 @@ public class MinionsRepository extends YamlConfig {
     private CompMaterial place;
     @Getter
     private String armorUrl;
+    @Getter
+    private int delayFarm;
+    @Getter
+    private int damageOnBlock;
+    @Getter
+    private CompMaterial giveItem;
     private String fileName;
 
-    public MinionsRepository(String fileName){
+    public MinionsRepository(String fileName) {
         this.fileName = fileName.replaceAll(".yml", "");
-        this.loadConfiguration(NO_DEFAULT, FileAPI.getFileMinions().getPath()+FILE_SEPARATOR+fileName);
+        this.loadConfiguration(NO_DEFAULT, FileAPI.getFileMinions().getPath() + FILE_SEPARATOR + fileName);
     }
-
 
 
     @Override
     protected void onLoad() {
-        this.key = getStringPath(MinionConfigConstants.KEY);
+        this.key = fileName;
         this.title = getStringPath(MinionConfigConstants.TITLE);
         this.headSkin = getStringPath(MinionConfigConstants.HEAD_SKIN);
         this.lore = getListStringPath(MinionConfigConstants.LORE);
@@ -52,15 +58,22 @@ public class MinionsRepository extends YamlConfig {
         this.minionType = getMinionTypePath();
         this.place = getMaterialPath(MinionConfigConstants.PLACE);
         this.armorUrl = getStringPath(MinionConfigConstants.ARMOR_URL);
+        this.delayFarm = getIntegerPath(MinionConfigConstants.DELAY);
+        this.giveItem = getMaterialPath(MinionConfigConstants.GIVE_ITEM);
+        this.damageOnBlock = getIntegerPath(MinionConfigConstants.DAMAGE);
     }
 
     private String getStringPath(String path) {
-        return this.getString(this.fileName + "." + path, "").replace("&", "§");
+        return ChatColor.translateAlternateColorCodes('&', this.getString(this.fileName + "." + path, ""));
+    }
+
+    private int getIntegerPath(String path) {
+        return this.getInteger(this.fileName + "." + path, 0);
     }
 
     private List<String> getListStringPath(String path) {
         return this.getStringList(this.fileName + "." + path).stream()
-                .map(originalString -> originalString.replace("&", "§"))
+                .map(originalString -> ChatColor.translateAlternateColorCodes('&', originalString))
                 .collect(Collectors.toList());
     }
 
@@ -76,5 +89,4 @@ public class MinionsRepository extends YamlConfig {
             return MinionType.NONE;
         }
     }
-
 }

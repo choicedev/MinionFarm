@@ -12,15 +12,16 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockUtils {
 
-    public static Block getRandomBlock(Location location, int y, int distance, boolean allow_vertical) {
+    public static Block getRandomBlock(Location location, int distance, boolean allowVertical) {
         int randomX = location.getBlockX() - distance + ThreadLocalRandom.current().nextInt(2 * distance + 1);
         int randomY = location.getBlockY() - distance + ThreadLocalRandom.current().nextInt(2 * distance + 1);
         int randomZ = location.getBlockZ() - distance + ThreadLocalRandom.current().nextInt(2 * distance + 1);
-        return location.getWorld().getBlockAt(randomX, allow_vertical ? randomY : y, randomZ);
+        return location.getWorld().getBlockAt(randomX, allowVertical ? randomY : location.getBlockY(), randomZ);
     }
 
 
-    public static boolean isSpaceAvailable(CompMaterial material, Location location, int distance, boolean allow_vertical) {
+
+    public static Location isSpaceAvailable(Location location, int distance, boolean allow_vertical) {
         World world = location.getWorld();
 
         int minX = location.getBlockX() - distance;
@@ -35,13 +36,13 @@ public class BlockUtils {
                 for (int z = minZ; z <= maxZ; z++) {
                     Block block = world.getBlockAt(x, y, z);
                     CompMaterial type = CompMaterial.fromBlock(block);
-                    if (type != CompMaterial.AIR || type != material) {
-                        return false;
+                    if (type == CompMaterial.AIR) {
+                        return block.getLocation();
                     }
                 }
             }
         }
 
-        return true;
+        return null;
     }
 }

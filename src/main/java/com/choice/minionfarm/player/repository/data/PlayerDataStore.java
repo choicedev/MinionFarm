@@ -24,6 +24,7 @@ public class PlayerDataStore {
     @Getter
     private String lastLogin;
 
+    @Getter
     private static final HashMap<UUID, PlayerDataStore> players = new HashMap<>();
 
     public PlayerDataStore(UUID uuid) {
