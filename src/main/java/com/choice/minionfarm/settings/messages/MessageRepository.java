@@ -10,24 +10,19 @@ import java.util.stream.Collectors;
 
 import static com.choice.minionfarm.utils.constants.Constants.FILE_MESSAGES;
 
+@Getter
 public class MessageRepository extends FarmYamlConfig {
 
-    @Getter
     private String insertMinionInWorld;
 
-    @Getter
     private String removeMinionWorld;
 
-    @Getter
     private String minionMaxInsert;
 
 
     //Holograms
-    @Getter
     private List<String> noSpaceAround;
-    @Getter
     private List<String> welcomeToWorld;
-    @Getter
     private List<String> working;
 
     public MessageRepository(){
@@ -54,8 +49,8 @@ public class MessageRepository extends FarmYamlConfig {
 
     public List<String> getWorking(String playerName, int amount){
         return this.working.stream().map(m ->
-                m.replace("<amount>", ""+amount)
-                        .replace("<player_name>", playerName)
+                m.replace("{amount}", ""+amount)
+                        .replace("{player_name}", playerName)
         ).toList();
     }
 }
