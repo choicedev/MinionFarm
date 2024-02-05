@@ -118,7 +118,7 @@ public class ArmorStandData {
         if (!spaceAround) {
             minionHologram.updateHologram(spawn, FileAPI.getMessagesRepository().getNoSpaceAround());
         }else{
-            minionHologram.updateHologram(spawn, FileAPI.getMessagesRepository().getWorking());
+            minionHologram.updateHologram(spawn, FileAPI.getMessagesRepository().getWorking(player.displayName(), getAmount()));
         }
 
 
@@ -128,7 +128,7 @@ public class ArmorStandData {
             preExecuteAction();
         }
 
-        if (breakTimer > entityMinion.getDelay()) {
+        if (breakTimer >= entityMinion.getDelay()) {
             breakTimer = 0;
             isBusy = true;
             this.entityMinion.action(this, armorStand, spawn, (action) -> {

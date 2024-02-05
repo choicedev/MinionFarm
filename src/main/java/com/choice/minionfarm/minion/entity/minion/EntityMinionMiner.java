@@ -44,6 +44,7 @@ public class EntityMinionMiner extends EntityMinion {
                 blockBreakRunnable = new BlockBreakRunnable(minion, () -> {
                     Block block = minion.getMinionAction().getLocation().getBlock();
                     block.setType(Material.AIR);
+                    minion.setAmount(minion.getAmount() + 1);
                     action.callback(true);
                 });
                 blockBreakRunnable.start();

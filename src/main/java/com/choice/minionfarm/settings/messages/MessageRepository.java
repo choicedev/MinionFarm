@@ -51,4 +51,11 @@ public class MessageRepository extends FarmYamlConfig {
                 .map(originalString -> ChatColor.translateAlternateColorCodes('&', originalString))
                 .collect(Collectors.toList());
     }
+
+    public List<String> getWorking(String playerName, int amount){
+        return this.working.stream().map(m ->
+                m.replace("<amount>", ""+amount)
+                        .replace("<player_name>", playerName)
+        ).toList();
+    }
 }
