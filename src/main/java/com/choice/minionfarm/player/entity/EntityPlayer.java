@@ -24,6 +24,10 @@ public class EntityPlayer {
         this.player = player;
     }
 
+    public String displayName(){
+        return this.player.getDisplayName();
+    }
+
     public UUID getUniqueId(){
         return this.player.getUniqueId();
     }

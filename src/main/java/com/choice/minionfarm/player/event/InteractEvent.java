@@ -1,8 +1,9 @@
 package com.choice.minionfarm.player.event;
 
 import com.choice.minionfarm.api.FarmAPI;
+import com.choice.minionfarm.api.FileAPI;
 import com.choice.minionfarm.minion.entity.EntityMinion;
-import com.choice.minionfarm.minion.repository.data.MinionData;
+import com.choice.minionfarm.minion.repository.data.ArmorStandData;
 import com.choice.minionfarm.nbt.NBTDataHandler;
 import com.choice.minionfarm.player.entity.EntityPlayer;
 import com.choice.minionfarm.player.repository.data.PlayerDataStore;
@@ -19,7 +20,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.mineacademy.fo.Common;
 import org.mineacademy.fo.remain.CompMaterial;
 
 public class InteractEvent implements Listener {
@@ -38,7 +38,7 @@ public class InteractEvent implements Listener {
         String keyMinion = new NBTDataHandler(item, Constants.MINION_HEAD_COMPOUND).getString(MinionConfigConstants.KEY);
         PlayerDataStore playerData = PlayerDataStore.getPlayer(player.getUniqueId());
         if (playerData.getMinions().size() >= playerData.getMaxMinions()) {
-            player.sendMessage("<red>Você já colocou o maximo de minions!");
+            player.sendMessage(FileAPI.getMessagesRepository().getMinionMaxInsert());
             return;
         }
         if (FarmAPI.getMinionManager().containsMinionInBlock(block)) {
@@ -47,7 +47,7 @@ public class InteractEvent implements Listener {
         }
 
 
-        MinionData minion = new MinionData(
+        ArmorStandData minion = new ArmorStandData(
                 player,
                 keyMinion,
                 placeLocation
@@ -56,8 +56,11 @@ public class InteractEvent implements Listener {
         minion.spawn();
         playerData.addMinion(minion);
         player.removeItemInventory(event.getItem());
-        player.sendMessage("<green>Você spawnou um "+minion.getMinion().getTitle());
-        player.sendMessage("<yellow>("+playerData.getMinions().size()+"/"+playerData.getMaxMinions()+")");
+        player.sendMessage(FileAPI.getMessagesRepository().getInsertMinionInWorld(), map -> {
+            map.put("{minion_name}", minion.getEntityMinion().getTitle());
+            map.put("{onWorld}", ""+playerData.getMinions().size());
+            map.put("{maxMinion}", ""+playerData.getMaxMinions());
+        });
     }
 
     @EventHandler
@@ -66,24 +69,23 @@ public class InteractEvent implements Listener {
         if(!(event.getEntity() instanceof ArmorStand armorStand)) return;
 
         EntityPlayer player = new EntityPlayer(damager);
-        MinionData minionData = FarmAPI.getMinionManager().getMinionActive(armorStand.getUniqueId());
+        ArmorStandData armorStandData = FarmAPI.getMinionManager().getMinionActive(armorStand.getUniqueId());
 
-        if(minionData == null) return;
-        Common.broadcast(""+!(minionData.getPlayer().getUniqueId().equals(player.getUniqueId()) || player.isOp()));
-        if(!(minionData.getPlayer().getUniqueId().equals(player.getUniqueId()) || player.isOp())) return;
+        if(armorStandData == null) return;
+        if(!(armorStandData.getPlayer().getUniqueId().equals(player.getUniqueId()) || player.isOp())) return;
         event.setCancelled(true);
-        Common.broadcast("" + PlayerDataStore.getPlayer(minionData.getPlayer().getUniqueId()).getMinions().size());
-        PlayerDataStore playerDataStore = PlayerDataStore.getPlayer(minionData.getPlayer().getUniqueId());
-        Common.broadcast("" + playerDataStore.getMinions());
-        EntityMinion minion = FarmAPI.getMinionManager().getMinion(minionData.getKey());
-        Common.broadcast("" + minionData.getKey());
+       PlayerDataStore playerDataStore = PlayerDataStore.getPlayer(armorStandData.getPlayer().getUniqueId());
+        EntityMinion entityMinion = FarmAPI.getMinionManager().getMinion(armorStandData.getKey());
 
-        minionData.removeFromWorld();
-        playerDataStore.removeMinion(minionData.getUuid());
+        armorStandData.removeFromWorld();
+        playerDataStore.removeMinion(armorStandData.getUuid());
 
-        player.addItems(minion.getHead());
-        player.sendMessage("<yellow>(" + playerDataStore.getMinions().size() + "/" + playerDataStore.getMaxMinions() + ")");
-
+        player.addItems(entityMinion.getHead());
+        player.sendMessage(FileAPI.getMessagesRepository().getRemoveMinionWorld(), map -> {
+            map.put("{minion_name}", armorStandData.getEntityMinion().getTitle());
+            map.put("{onWorld}", ""+playerDataStore.getMinions().size());
+            map.put("{maxMinion}", ""+playerDataStore.getMaxMinions());
+        });
 
     }
 

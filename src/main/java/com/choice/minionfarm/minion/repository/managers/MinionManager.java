@@ -4,7 +4,7 @@ import com.choice.minionfarm.api.FileAPI;
 import com.choice.minionfarm.minion.di.enums.MinionType;
 import com.choice.minionfarm.minion.entity.EntityMinion;
 import com.choice.minionfarm.minion.entity.minion.EntityMinionMiner;
-import com.choice.minionfarm.minion.repository.data.MinionData;
+import com.choice.minionfarm.minion.repository.data.ArmorStandData;
 import com.choice.minionfarm.minion.repository.local.MinionsRepository;
 import com.choice.minionfarm.settings.temporary.ActiveMinionsRepository;
 import org.bukkit.Location;
@@ -23,7 +23,7 @@ public class MinionManager {
     ActiveMinionsRepository repository = new ActiveMinionsRepository();
 
     private HashMap<String, EntityMinion> minionsHashMap = new HashMap<>();
-    private HashMap<UUID, MinionData> activeMinion = new HashMap<>();
+    private HashMap<UUID, ArmorStandData> activeMinion = new HashMap<>();
 
     public MinionManager(){
         loadMinions();
@@ -51,13 +51,13 @@ public class MinionManager {
         return minionsHashMap.get(key);
     }
 
-    public void addActiveMinion(UUID uuid, MinionData minionData){
-        activeMinion.put(uuid, minionData);
+    public void addActiveMinion(UUID uuid, ArmorStandData armorStandData){
+        activeMinion.put(uuid, armorStandData);
         repository.addMinionsActive(uuid);
         repository.save();
     }
 
-    public MinionData getMinionActive(UUID uuid){
+    public ArmorStandData getMinionActive(UUID uuid){
         return activeMinion.getOrDefault(uuid, null);
     }
 

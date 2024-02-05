@@ -1,27 +1,24 @@
 package com.choice.minionfarm.minion.animation.runnable;
 
 import com.choice.minionfarm.api.FarmAPI;
-import com.choice.minionfarm.minion.repository.data.MinionData;
+import com.choice.minionfarm.minion.repository.data.ArmorStandData;
 import com.choice.minionfarm.packet.BlockPositionPacket;
 import com.choice.minionfarm.utils.function.Callback;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.Function;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.mineacademy.fo.Common;
 import org.mineacademy.fo.model.SimpleRunnable;
 import org.mineacademy.fo.remain.CompMaterial;
 
 public class BlockBreakRunnable extends SimpleRunnable {
 
-    private MinionData minionData;
+    private ArmorStandData armorStandData;
     private final Callback callback;
     private int damage = 0;
 
-    public BlockBreakRunnable(MinionData minionData, Callback callback){
-        this.minionData = minionData;
-        this.damage = minionData.getDamage();
+    public BlockBreakRunnable(ArmorStandData armorStandData, Callback callback){
+        this.armorStandData = armorStandData;
+        this.damage = armorStandData.getDamage();
         this.callback = callback;
     }
 
@@ -38,7 +35,7 @@ public class BlockBreakRunnable extends SimpleRunnable {
 
     @Override
     public void run() {
-        Block blockFocused = minionData.getMinionAction().getLocation().getBlock();
+        Block blockFocused = armorStandData.getMinionAction().getLocation().getBlock();
 
         if(CompMaterial.fromBlock(blockFocused) == CompMaterial.AIR){
             cleanRunnable();
@@ -54,9 +51,9 @@ public class BlockBreakRunnable extends SimpleRunnable {
     }
 
     private void executeBreak(){
-        for (Entity ent : minionData.getSpawn().getWorld().getNearbyEntities(minionData.getSpawn(), 4, 4, 4)) {
+        for (Entity ent : armorStandData.getSpawn().getWorld().getNearbyEntities(armorStandData.getSpawn(), 4, 4, 4)) {
             if (!(ent instanceof Player player)) continue;
-            BlockPositionPacket.sendPacket(player, minionData.getMinionAction().getLocation(), damage);
+            BlockPositionPacket.sendPacket(player, armorStandData.getMinionAction().getLocation(), damage);
         }
     }
 }

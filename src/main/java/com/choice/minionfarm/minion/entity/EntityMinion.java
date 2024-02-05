@@ -1,7 +1,7 @@
 package com.choice.minionfarm.minion.entity;
 
 import com.choice.minionfarm.minion.di.enums.TypeFarm;
-import com.choice.minionfarm.minion.repository.data.MinionData;
+import com.choice.minionfarm.minion.repository.data.ArmorStandData;
 import com.choice.minionfarm.minion.repository.local.MinionsRepository;
 import com.choice.minionfarm.nbt.NBTDataHandler;
 import com.choice.minionfarm.utils.function.BiFunction;
@@ -54,7 +54,7 @@ public abstract class EntityMinion {
         return minionsRepository.getLore();
     }
 
-    public abstract void action(MinionData minion, ArmorStand armorStand, Location location, Function<Boolean> action);
+    public abstract void action(ArmorStandData minion, ArmorStand armorStand, Location location, Function<Boolean> action);
 
     public abstract boolean checkBlock(Location location);
     public abstract Location checkBlockAround(Location location);

@@ -15,8 +15,8 @@ public class MinionCommand extends BaseCommand {
     @Subcommand("cobblestone")
     public static void onGiveFarmCobbleStone(Player player){
         EntityPlayer entityPlayer = new EntityPlayer(player);
-        EntityMinion minion = FarmAPI.getMinionManager().getMinion("cobblestone");
-        entityPlayer.addItems(minion.getHead());
+        EntityMinion entityMinion = FarmAPI.getMinionManager().getMinion("cobblestone");
+        entityPlayer.addItems(entityMinion.getHead());
     }
 
 }

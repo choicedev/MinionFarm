@@ -1,9 +1,10 @@
 package com.choice.minionfarm.minion.repository.data;
 
 import com.choice.minionfarm.api.FarmAPI;
+import com.choice.minionfarm.api.FileAPI;
+import com.choice.minionfarm.api.hologram.HologramAPI;
 import com.choice.minionfarm.minion.di.enums.MinionType;
 import com.choice.minionfarm.minion.di.enums.Parts;
-import com.choice.minionfarm.minion.di.enums.TypeFarm;
 import com.choice.minionfarm.minion.di.model.MinionAction;
 import com.choice.minionfarm.minion.entity.EntityMinion;
 import com.choice.minionfarm.minion.entity.minion.EntityMinionMiner;
@@ -18,11 +19,10 @@ import org.bukkit.entity.ArmorStand;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.remain.CompMaterial;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 @AllArgsConstructor
-public class MinionData {
+public class ArmorStandData {
 
     @Getter
     @Setter
@@ -58,7 +58,7 @@ public class MinionData {
 
     @Getter
     @Setter
-    private boolean isEnabled;
+    private boolean spaceAround;
 
     private boolean isLoaded = false;
 
@@ -66,13 +66,15 @@ public class MinionData {
     private final EntityPlayer player;
 
     @Getter
-    private EntityMinion minion;
+    private EntityMinion entityMinion;
 
     private BodyPart bodyMinion;
 
+    boolean isBusy = false;
     private int breakTimer = 0;
+    private HologramAPI minionHologram;
 
-    public MinionData(EntityPlayer player, String key, Location spawn) {
+    public ArmorStandData(EntityPlayer player, String key, Location spawn) {
         this.player = player;
         this.spawn = spawn;
         this.key = key;
@@ -81,15 +83,15 @@ public class MinionData {
 
     public void init() {
         this.headSkin = "";
-        this.minion = FarmAPI.getMinionManager().getMinion(this.key);
-        this.minionType = minion.getMinionsRepository().getMinionType();
+        this.entityMinion = FarmAPI.getMinionManager().getMinion(this.key);
+        this.minionType = entityMinion.getMinionsRepository().getMinionType();
     }
 
     public void spawn() {
         CompMaterial blockBusy = CompMaterial.fromBlock(spawn.add(0, 1, 0).getBlock());
 
         if (blockBusy != CompMaterial.AIR) {
-            isEnabled = false;
+            spaceAround = false;
             return;
         }
 
@@ -99,36 +101,37 @@ public class MinionData {
         bodyMinion.setBodyPose(Parts.BODY);
         bodyMinion.rotateBody(player.getLocation());
         configureArmorStand(armorStand);
+        minionHologram = new HologramAPI(armorStand.getUniqueId().toString());
+        minionHologram.createHologram(spawn, FileAPI.getMessagesRepository().getWelcomeToWorld().stream().map(map -> map.replace("{player_name}", player.displayName())).toList());
         FarmAPI.getMinionManager().addActiveMinion(armorStand.getUniqueId(), this);
-        this.isEnabled = this.minion.checkBlock(spawn);
+        //this.spaceAround = this.entityMinion.checkBlock(spawn);
         isLoaded = true;
     }
 
-    boolean isBusy = false;
     public void minionAction() {
-        if (armorStand == null || !isLoaded) {
+        if (armorStand == null || !isLoaded || isBusy) {
             return;
         }
+        spawn = armorStand.getLocation();
+        this.spaceAround = this.entityMinion.checkBlock(spawn);
 
+        if (!spaceAround) {
+            minionHologram.updateHologram(spawn, FileAPI.getMessagesRepository().getNoSpaceAround());
+        }else{
+            minionHologram.updateHologram(spawn, FileAPI.getMessagesRepository().getWorking());
+        }
 
-        if(isBusy) return;
 
         breakTimer++;
 
-        if (!isEnabled) {
-            player.sendMessage("<red> No space around");
-            return;
-        }
-
-
-        if (breakTimer == minion.getDelay() - 2) {
+        if (breakTimer == entityMinion.getDelay() - 2) {
             preExecuteAction();
         }
 
-        if (breakTimer >= minion.getDelay()) {
+        if (breakTimer > entityMinion.getDelay()) {
             breakTimer = 0;
             isBusy = true;
-            this.minion.action(this, armorStand, spawn, (action) -> {
+            this.entityMinion.action(this, armorStand, spawn, (action) -> {
                 breakTimer++;
                 isBusy = false;
                 bodyMinion.setBodyPose(Parts.RIGHT_ARM);
@@ -139,7 +142,7 @@ public class MinionData {
     }
 
     public int getDamage(){
-        return minion.getMinionsRepository().getDamageOnBlock();
+        return entityMinion.getMinionsRepository().getDamageOnBlock();
     }
 
     private MinionAction minionAction;
@@ -150,17 +153,17 @@ public class MinionData {
     }
 
     private void preExecuteAction() {
-        if (minion instanceof EntityMinionMiner) {
-            minion.preExecuteAction(spawn, (type, location) -> {
+        if (entityMinion instanceof EntityMinionMiner) {
+            entityMinion.preExecuteAction(spawn, (type, location) -> {
                 switch (type){
                     case BREAK -> {
-                        armorStand.setItemInHand(minion.getItemHand());
+                        armorStand.setItemInHand(entityMinion.getItemHand());
                         bodyMinion.setBodyPose(Parts.BODY);
                         bodyMinion.rotateBody(location);
                         bodyMinion.animateRightArmAsync();
                     }
                     case PLACE -> {
-                        armorStand.setItemInHand(minion.getPlace().toItem());
+                        armorStand.setItemInHand(entityMinion.getPlace().toItem());
                         bodyMinion.setBodyPose(Parts.BODY);
                         bodyMinion.rotateBody(location);
                         bodyMinion.animateRightArmAsync();
@@ -180,13 +183,13 @@ public class MinionData {
     }
 
     private void addEquipment(ArmorStand entity) {
-        entity.setItemInHand(minion.getItemHand());
-        entity.setHelmet(minion.getHead());
+        entity.setItemInHand(entityMinion.getItemHand());
+        entity.setHelmet(entityMinion.getHead());
 
-        if (!this.minion.getArmor().isEmpty()) {
-            entity.setChestplate(this.minion.getArmor().get(Constants.ENTITY_CHESTPLATE));
-            entity.setLeggings(this.minion.getArmor().get(Constants.ENTITY_LEGGINGS));
-            entity.setBoots(this.minion.getArmor().get(Constants.ENTITY_BOOTS));
+        if (!this.entityMinion.getArmor().isEmpty()) {
+            entity.setChestplate(this.entityMinion.getArmor().get(Constants.ENTITY_CHESTPLATE));
+            entity.setLeggings(this.entityMinion.getArmor().get(Constants.ENTITY_LEGGINGS));
+            entity.setBoots(this.entityMinion.getArmor().get(Constants.ENTITY_BOOTS));
         }
     }
 
@@ -198,7 +201,8 @@ public class MinionData {
     }
 
     private void deleteMinion() {
-        minion.stop();
+        entityMinion.stop();
+        minionHologram.removeHologram();
         FarmAPI.getMinionManager().removeMinionActive(armorStand.getUniqueId());
     }
 }

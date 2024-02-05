@@ -1,10 +1,11 @@
 package com.choice.minionfarm.api;
 
+import com.choice.minionfarm.Main;
+import com.choice.minionfarm.settings.messages.MessageRepository;
 import org.mineacademy.fo.Common;
 
 import java.io.File;
 
-import static com.choice.minionfarm.utils.constants.Constants.FILE_ACTIVE_MINIONS;
 import static com.choice.minionfarm.utils.constants.Constants.FILE_MINIONS_CONFIG;
 
 public class FileAPI {
@@ -33,9 +34,10 @@ public class FileAPI {
         }
     }
 
-    public static File getFileActiveMinions(){
+
+    public static MessageRepository getMessagesRepository(){
         try {
-            return new File(FILE_ACTIVE_MINIONS);
+            return Main.messageRepository;
         }catch (Exception e){
             e.printStackTrace();
             Common.error(e);
@@ -43,18 +45,5 @@ public class FileAPI {
         }
     }
 
-    public static File getFileActiveMinionsFull(){
-        try {
-            File file = new File(FarmAPI.getInstance().getDataFolder()+"/"+FILE_ACTIVE_MINIONS);
-            if(!file.exists()) {
-                file.mkdirs();
-            }
-            return file;
-        }catch (Exception e){
-            e.printStackTrace();
-            Common.error(e);
-            throw e;
-        }
-    }
 
 }

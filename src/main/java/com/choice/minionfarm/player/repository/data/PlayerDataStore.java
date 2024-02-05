@@ -1,6 +1,6 @@
 package com.choice.minionfarm.player.repository.data;
 
-import com.choice.minionfarm.minion.repository.data.MinionData;
+import com.choice.minionfarm.minion.repository.data.ArmorStandData;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 public class PlayerDataStore {
 
     @Getter
-    private final HashMap<UUID, MinionData> minions = new HashMap<>();
+    private final HashMap<UUID, ArmorStandData> minions = new HashMap<>();
 
     @Setter
     @Getter
@@ -35,7 +35,7 @@ public class PlayerDataStore {
     }
 
 
-    public void addMinion(MinionData data) {
+    public void addMinion(ArmorStandData data) {
         minions.put(data.getUuid(), data);
     }
 

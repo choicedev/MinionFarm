@@ -1,0 +1,14 @@
+messages:
+  insertMinionInWorld: '<green>You add minion <b>{minion_name}</b> in world <aqua>({onWorld}/{maxMinion})'
+  removeMinionWorld: '<red>You remove minion <b>{minion_name}</b> from world <aqua>({onWorld}/{maxMinion})'
+  minionMaxInsert: '<red>You insert max minion.'
+
+holograms:
+  noSpaceAround:
+    - '&c/!\'
+    - '&cNo Space Around'
+  working:
+    - 'Breaking or Place blocks..'
+  welcomeToWorld:
+    - '&eHi {player_name}'
+    - '&eThank you for spawn me'

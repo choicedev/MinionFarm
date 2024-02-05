@@ -13,5 +13,6 @@ public class Constants {
     //Configs Name
     public static final String FILE_MINIONS_CONFIG = "minions";
     public static final String FILE_ACTIVE_MINIONS = "active_minions.yml";
+    public static final String FILE_MESSAGES = "messages.yml";
 
 }
