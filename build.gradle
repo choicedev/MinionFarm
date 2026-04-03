@@ -84,7 +84,7 @@ processResources {
 shadowJar {
     mergeServiceFiles()
     archiveFileName.set("${project.name}-${project.version}.jar")
-    destinationDirectory.set(file("C:\\Choice\\MC SERVER\\plugins"))
+    destinationDirectory.set(file("D:\\Choice pastes\\MC SERVER\\plugins"))
     relocate 'com.cryptomorin.xseries', 'com.choice.xseries'
     relocate 'net.kyori', 'com.choice.framework.api.minimessage'
     relocate 'org.reflections', 'com.choice.api'

@@ -1,0 +1,16 @@
+cobblestone:
+  key: cobblestone
+  type: MINER
+  title: '&8Cobblestone Minion'
+  lore:
+    - '&7This is a Cobblestone Minion'
+    - '&7'
+    - '&eRight click to place'
+  head_skin: eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTczMDkyY2FlYTg5ZGQxMmQzNjgzNzVmMWEwOTc3OTZlM2JjODhmODA5YWNjZjMyMDcwNmJkYzA0OGNkNGM1ZSJ9fX0=
+  armor_url: '{Trim:{pattern:coast,material:lapis},display:{color:4673362}}'
+  place: COBBLESTONE
+  hand_item: WOODEN_PICKAXE
+  give_item: COBBLESTONE
+  damage: 5
+  delay: 10
+
